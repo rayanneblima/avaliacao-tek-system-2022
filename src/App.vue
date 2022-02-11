@@ -1,26 +1,66 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <Header @showRegisterModal="showRegisterModal = true" />
+  <ContactListing 
+    :contacts="contacts"
+    @editContact="editContact($event)"
+    @deleteContact="deleteContact($event)"
+  />
+
+  <transition name="register-modal">
+    <ContactRegister 
+      v-if="showRegisterModal"
+      :contact="contactToEdit"
+      @addContact="contacts.push($event)"
+      @showRegisterModal="showRegisterModal = $event"
+    />
+  </transition>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Header from "@/components/Header";
+import ContactListing from "@/components/ContactListing";
+import ContactRegister from "@/components/ContactRegister";
 
 export default {
   name: 'App',
+
   components: {
-    HelloWorld
-  }
+    Header,
+    ContactListing,
+    ContactRegister
+  },
+
+  data () {
+    return {
+      showRegisterModal: false,
+      contacts: [],
+      contactToEdit: null
+    }
+  },
+
+  methods: {
+    editContact (contactId) {
+      this.contactToEdit = this.contacts.find(contact => contact.id !== contactId);
+      if (this.contactToEdit) {
+        this.showRegisterModal = true;
+      }
+    },
+
+    deleteContact (contactId) {
+      this.contacts = this.contacts.filter(contact => contact.id !== contactId);
+    }
+  },
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+/* Animated Register Modal */
+.register-modal-enter-active,
+.register-modal-leave-active {
+  transition: 0.4s ease-in-out all;
+}
+.register-modal-enter-from,
+.register-modal-leave-to {
+  opacity: 0.1;
 }
 </style>

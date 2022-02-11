@@ -1,0 +1,101 @@
+:root {
+  --primary-bg: #CEDEE5;
+  --primary-text: #8FA7B2;
+  --green: #3EE08F;
+  --white: #FFFFFF;
+  --dark-green: #4D6F80;
+  --light-green: #F5F8FA;
+  --gray: #C5C5C5;
+  --light-red: #FFE4EE;
+  --red: #F61A6C;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 93.75%; /* 15px */
+}
+
+body {
+  background: var(--primary-bg);
+  color: var(--primary-text);
+  font-family: 'Poppins', sans-serif;
+}
+
+::-webkit-scrollbar {
+  width:6px;
+  height:6px;
+}
+
+::-webkit-scrollbar-thumb:vertical {
+  background: var(--dark-green);
+  border-radius: 8px;
+}
+
+
+a {
+  color: var(--primary-text);
+  text-decoration: none;
+  transition: all 0.4s ease-in-out;
+}
+
+a:hover {
+  color: var(--dark-green);
+}
+
+button:hover,
+.button:hover {
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  cursor: pointer;
+  transform: scale(1.1);
+}
+
+button,
+.button--green,
+.button--red {
+  border: none;
+  border-radius: 20px;
+  color: var(--white);
+  font-weight: bold;
+  padding: 15px 20px;
+}
+
+button.button--green,
+.button.button--green {
+  background: var(--green) !important;
+}
+
+button.button--red,
+.button.button--red {
+  background: var(--light-red) !important;
+}
+
+button:disabled,
+.button:disabled {
+  background: var(--gray) !important;
+  cursor: not-allowed;
+}
+
+input:disabled {
+  color: var(--gray) !important;
+  cursor: not-allowed;
+}
+
+li {
+  list-style: none;
+}
+
+#app {
+  background: var(--primary-bg);
+  min-height: 100vh;
+}
+
+@media (min-width: 860px) {
+  html {
+    font-size: 87.5%; /* 14px */
+  }
+}
