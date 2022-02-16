@@ -41,6 +41,7 @@ export default {
 
 <style scoped>
 #contact-listing,
+#contact-listing > div,
 .no-content {
   align-items: center;
   display: flex;

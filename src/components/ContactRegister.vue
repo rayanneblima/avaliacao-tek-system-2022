@@ -1,14 +1,15 @@
 <template>
   <section class="overlay" @click.self="$emit('showRegisterModal', false)">
-    <form id="contact-register">
+    {{ contact }}
+    <form id="contact-register" @submit.prevent="saveContact">
       <div class="register__header">
         <h3>Cadastro de Contato</h3>
 
-        <div @click="saveContact" class="button">
+        <button type="submit" class="button transparent">
           <div class="button__icon">
             <img src="@/assets/save.svg" alt="Salvar Contato" />
           </div>
-        </div>  
+        </button>  
       </div>
 
       <div class="register__principal">
@@ -17,7 +18,7 @@
           v-model="fullName"
           type="text" 
           name="fullName" 
-          placeholder="Nome Completo" 
+          placeholder="Fulano da Silva Souza" 
           required
         />
 
@@ -54,19 +55,20 @@
         <label for="cpf">CPF</label>
         <input 
           v-model="cpf"
-          type="text" 
+          type="tel" 
           name="cpf" 
-          placeholder="CPF" 
+          placeholder="000.000.000-00"
           :required="pf"
+          v-mask="'###.###.###-##'"
         />
 
         <label for="rg">RG</label>
         <input 
           v-model="rg"
-          type="text" 
+          type="tel" 
           name="rg" 
-          placeholder="RG"  
-          :required="pf"
+          placeholder="00.000.000-0"
+          v-mask="'##.###.###-#'"
         />
       </div>
       
@@ -76,26 +78,27 @@
           v-model="cnpj"
           type="text" 
           name="cnpj" 
-          placeholder="CNPJ" 
+          placeholder="00.000.000/0000-00" 
           :required="pj"
+          v-mask="'##.###.###/####-##'"
         />
 
         <label for="inscricaoEstadual">Inscrição Estadual</label>
         <input 
           v-model="inscricaoEstadual"
-          type="text" 
+          type="tel" 
           name="inscricaoEstadual" 
-          placeholder="Inscrição Estadual" 
-          :required="pj"
+          placeholder="00.000.0000-0"
+          v-mask="'##.###.####-#'"
         />
       </div>
 
       <div class="register__group">
         <label for="group">Grupo</label>
-        <select name="group" id="group">
-          <option value="">x</option>
-          <option value="">y</option>
-          <option value="">z</option>
+        <select name="group" id="group" v-model="group">
+          <option value="X">x</option>
+          <option value="Y">y</option>
+          <option value="Z">z</option>
         </select>
       </div>
 
@@ -107,9 +110,10 @@
         <label for="phone"></label>
         <input 
           v-model="phone"
-          type="text" 
+          type="tel"
           name="phone" 
-          placeholder="Número do Telefone" 
+          placeholder="(00) 00000-0000" 
+          v-mask="['(##) ####-####', '(##) #####-####']"
         />
 
         <button type="button" class="button--green" @click.self="addPhone" :disabled="!this.phone">
@@ -123,7 +127,7 @@
             :value="ph"
             type="text" 
             name="phone" 
-            placeholder="Número do Telefone"
+            placeholder="(00) 00000-0000"
             disabled
           />
 
@@ -152,6 +156,7 @@ export default {
 
   data () {
     return {
+      id: '',
       fullName: '',
       pf: true,
       pj: false,
@@ -159,29 +164,62 @@ export default {
       rg: '',
       cnpj: '',
       inscricaoEstadual: '',
-      group: '',
+      group: 'X',
       phoneList: [],
-      phone: ''
+      phone: '',
     }
   },
 
   watch: {
     pf () {
-      return !this.pf ? this.pj = true : this.pj = false;
+      return this.pj = !this.pf;
     },
 
     pj () {
-      return !this.pj ? this.pf = true : this.pf = false;
-    },
-
-    contact () {
-      const { fullName, document } = this.contact;
-      this.fullName = fullName;
-      this.cpf = document;
+      return this.pf = !this.pj;
     }
   },
 
+  mounted () {
+    if (this.contact) {
+      const { id, fullName, cpf, rg, cnpj, inscricaoEstadual, group, personType, phoneList } = this.contact;
+      this.id = id;
+      this.fullName = fullName;
+      this.group = group;
+      this.phoneList = phoneList;
+
+      if (personType === 'PF') {
+        this.cpf = cpf;
+        this.rg = rg;
+        this.pf = true;
+        return;
+      }
+
+      this.cnpj = cnpj;
+      this.inscricaoEstadual = inscricaoEstadual;      
+      this.pj = true;      
+    }
+  },
+
+  unmounted () {
+    this.resetFields();
+  },
+
   methods: {
+    resetFields () {
+      this.id = '',
+      this.fullName = '',
+      this.pf = true,
+      this.pj = false,
+      this.cpf = '',
+      this.rg = '',
+      this.cnpj = '',
+      this.inscricaoEstadual = '',
+      this.group = '',
+      this.phoneList = [],
+      this.phone = ''
+    },
+
     addPhone () {
       this.phoneList.push(this.phone);
       this.phone = '';
@@ -192,10 +230,26 @@ export default {
     },
 
     saveContact () {
+      if (this.fullname < 3) {
+        return alert('Informe o nome completo do contato.');
+      }
+
+      if (this.pf && this.cpf.length < 11) {
+        return alert('CPF incorreto.');
+      }
+
+      if (this.pj && this.cnpj.length < 14) {
+        return alert('CNPJ incorreto.');
+      }
+
       const contact = {
-        id: crypto.randomUUID(),
+        id: this.id || crypto.randomUUID(),
         fullName: this.fullName,
         document: this.pf ? this.cpf : this.cnpj,
+        document2: this.pf ? this.rg : this.inscricaoEstadual,
+        personType: this.pf ? 'PF' : 'PJ',
+        group: this.group,
+        phoneList: this.phoneList
       };
 
       this.$emit('addContact', contact);
@@ -232,6 +286,10 @@ export default {
   margin: 20px 0;
 }
 
+.register__header:first-of-type {
+  margin-top: 0;
+}
+
 .register__header h3 {
   color: var(--dark-green);
 }
@@ -266,6 +324,10 @@ select {
 input:focus,
 select:focus {
   outline: none;
+}
+
+select {
+  margin-top: 10px;
 }
 
 .principal__switches {

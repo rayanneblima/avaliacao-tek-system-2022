@@ -4,13 +4,18 @@
       <h3 class="card__name">
         {{ contact.fullName }}    
       </h3>
-      <p class="card__document">
-        {{ contact.document }}    
+      <p class="card__document" v-if="contact.personType === 'PF'">
+        {{ contact.cpf }}  
+        <span v-if="contact.rg">| {{ contact.rg }}</span>
+      </p>
+      <p class="card__document" v-if="contact.personType === 'PJ'">
+        {{ contact.cnpj }}  
+        <span v-if="contact.inscricaoEstadual">| {{ contact.inscricaoEstadual }}</span>
       </p>
     </div>
 
     <div class="card__actions">
-      <div @click="$emit('editContact', contact.id)" class="button">
+      <div @click="$emit('editContact', contact)" class="button">
         <div class="button__icon">
           <img src="@/assets/edit.svg" alt="Editar Contato" />
         </div>
@@ -62,6 +67,13 @@ export default {
 .card__actions {
   align-items: center;
   display: flex;
-  justify-content: space-between;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+@media (min-width: 768px) {
+  .contact-card {
+    width: 560px;
+  }
 }
 </style>

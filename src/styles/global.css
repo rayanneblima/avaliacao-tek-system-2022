@@ -89,6 +89,11 @@ li {
   list-style: none;
 }
 
+.transparent {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
 #app {
   background: var(--primary-bg);
   min-height: 100vh;
